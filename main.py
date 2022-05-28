@@ -37,6 +37,15 @@ class Location(BaseModel):
         max_length=30,
         )
 
+    class Config:
+        schema_extra = {
+            "example" : {
+                "city":"Gotham",
+                "state": "New York",
+                "country":"USA"
+            }
+        }
+
 class Person(BaseModel):
     firs_name: str = Field(
         ...,
@@ -55,6 +64,18 @@ class Person(BaseModel):
         )
     hair_color: Optional[HairColor] = Field(default=None) 
     is_married: Optional[bool] = Field(default=None)
+    
+    class Config:
+        schema_extra = {
+            "example" : {
+                "first_name":"Bruce",
+                "last_name": "Wayne",
+                "age":30,
+                "hair_color":"black",
+                "is_married":False
+                
+            }
+        }
 
 
 @app.get("/")
@@ -116,13 +137,13 @@ def update_person(
         title='The person to update',
         description='data to update'
     ),
-    location : Location = Body(
-        ...,
-        title='The person to update',
-        description='data to update'
-    )
+    # location : Location = Body(
+    #     ...,
+    #     title='The person to update',
+    #     description='data to update'
+    # )
     
 ):  
     response = person.dict()
-    response.update(location.dict())
+    # response.update(location.dict())
     return response
