@@ -11,6 +11,11 @@ from fastapi import Body
 app = FastAPI()
 
 # Models
+class Location(BaseModel):
+    city: str
+    state: str
+    country: str
+
 class Person(BaseModel):
     firs_name: str
     last_name: str
@@ -61,3 +66,30 @@ def show_person(
         )
 ):
     return{'person_id':person_id,'name':'Bruce','age':30}
+
+
+
+# Validations: RequestBody Parameters
+@app.put("/person/{person_id}")
+def update_person(
+    person_id : int = Path(
+     ...,
+     title='Person Id',
+     description='This is the person id',
+     gt=0   
+    ),
+    person : Person = Body(
+        ...,
+        title='The person to update',
+        description='data to update'
+    ),
+    location : Location = Body(
+        ...,
+        title='The person to update',
+        description='data to update'
+    )
+    
+):  
+    response = person.dict()
+    response.update(location.dict())
+    return response
