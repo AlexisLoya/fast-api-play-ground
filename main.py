@@ -1,11 +1,12 @@
 #Python
+from operator import gt
 from typing import Optional
 
 # Pydantic
 from pydantic import BaseModel
 
 # FastAPI
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Path, Query
 from fastapi import Body
 app = FastAPI()
 
@@ -32,7 +33,31 @@ def new_person(person: Person = Body(...)):
 
 @app.get("/person/detail")
 def show_person(
-    name : Optional[str] = Query(None, min_length=1,max_length=50),
-    age = Query(...)
+    name : Optional[str] = Query(
+        None,
+        min_length=1,
+        max_length=50,
+        title="person name",
+        description="This is the person name. It's between 1-50 characters"
+        ),
+    age = Query(
+        ...,
+        title="person age",
+        description="This is the person age. It's required"
+        )
 ):
-    return{'name':name,'age':age}
+    return {'name':name,'age':age}
+
+
+# Validations: Path Parameters
+@app.get("/person/detail/{person_id}")
+def show_person(
+    person_id: int = Path(
+        ...,
+        gt=0,
+        title="person id",
+        description="This is the person id. It's required"
+        
+        )
+):
+    return{'person_id':person_id,'name':'Bruce','age':30}
