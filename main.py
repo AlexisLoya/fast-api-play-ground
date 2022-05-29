@@ -2,6 +2,7 @@
 from operator import gt
 from typing import Optional
 from enum import Enum
+from click import password_option
 
 # Pydantic
 from pydantic import BaseModel
@@ -14,12 +15,13 @@ app = FastAPI()
 
 # Models
 
-class HairColor(Enum):
-    white = "White",
-    brown = "brown",
-    black = "black",
-    blonde = "blonde",
-    red = "red",
+class HairColor(Enum): 
+    white = "white"
+    brown = "brown"
+    black = "black"
+    blonde = "blonde"
+    red = "red"
+
 class Location(BaseModel):
     city: str = Field(
         ...,
@@ -46,8 +48,27 @@ class Location(BaseModel):
             }
         }
 
+class PersonOut(BaseModel):
+    first_name: str = Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        )
+    last_name: str = Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        )
+    age: int = Field(
+        ...,
+        gt=0,
+        le=130,
+        )
+    hair_color: Optional[HairColor] = Field(default=None, example=HairColor.black)
+    is_married: Optional[bool] = Field(default=None)
+    
 class Person(BaseModel):
-    firs_name: str = Field(
+    first_name: str = Field(
         ...,
         min_length=1,
         max_length=50,
@@ -64,15 +85,16 @@ class Person(BaseModel):
         )
     hair_color: Optional[HairColor] = Field(default=None) 
     is_married: Optional[bool] = Field(default=None)
-    
+    password: str = Field(...,min_length=8)
     class Config:
         schema_extra = {
             "example" : {
                 "first_name":"Bruce",
                 "last_name": "Wayne",
                 "age":30,
-                "hair_color":"black",
-                "is_married":False
+                "hair_color":"white",
+                "is_married":False,
+                "password":"hello_world",
                 
             }
         }
@@ -83,7 +105,7 @@ def home():
     return {"Hello": "World"}
 
 # Request and Response Body
-@app.post("/person/new/")
+@app.post("/person/new/", response_model=PersonOut)
 def new_person(person: Person = Body(...)):
     return person
 
@@ -99,8 +121,9 @@ def show_person(
         title="person name",
         description="This is the person name. It's between 1-50 characters"
         ),
-    age = Query(
+    age: int  = Query(
         ...,
+        gt=0,
         title="person age",
         description="This is the person age. It's required"
         )
@@ -116,7 +139,6 @@ def show_person(
         gt=0,
         title="person id",
         description="This is the person id. It's required"
-        
         )
 ):
     return{'person_id':person_id,'name':'Bruce','age':30}
