@@ -3,13 +3,13 @@ from operator import gt
 from typing import Optional
 from enum import Enum
 from click import password_option
-
+from typing import List
 # Pydantic
 from pydantic import BaseModel, EmailStr
 from pydantic import Field
 from pydantic import SecretStr
 # FastAPI
-from fastapi import FastAPI, Form, Header,Cookie, Path, Query, status
+from fastapi import FastAPI, File, Form, Header,Cookie, Path, Query, UploadFile, status
 from fastapi import Body
 app = FastAPI()
 
@@ -209,3 +209,33 @@ def contact(
     
 ):
     return user_agent
+
+# Files
+@app.post(
+    path="/post-image",
+    status_code=status.HTTP_201_CREATED
+)
+def post_image(
+    image: UploadFile = File(...)
+):
+    return {
+        "Filename":image.filename,
+        "Format":image.content_type,
+        "Size(kb)":round(len(image.file.read())/1024, ndigits=2),
+        "file":image
+    }
+
+
+@app.post(
+    path='/post-multi-image'
+)
+def post_image(
+    images: List[UploadFile] = File(...)
+):
+    info_images = [{
+        "filename": image.filename,
+        "Format": image.content_type,
+        "Size(kb)": round(len(image.file.read())/1024, ndigits=2)
+    } for image in images]
+
+    return info_images
