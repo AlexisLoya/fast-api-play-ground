@@ -7,9 +7,9 @@ from click import password_option
 # Pydantic
 from pydantic import BaseModel
 from pydantic import Field
-
+from pydantic import SecretStr
 # FastAPI
-from fastapi import FastAPI, Path, Query, status
+from fastapi import FastAPI, Form, Path, Query, status
 from fastapi import Body
 app = FastAPI()
 
@@ -21,7 +21,6 @@ class HairColor(Enum):
     black = "black"
     blonde = "blonde"
     red = "red"
-
 class Location(BaseModel):
     city: str = Field(
         ...,
@@ -81,7 +80,8 @@ class PersonOut(PersonBase):
     pass    
 class Person(PersonBase):
     password: str = Field(...,min_length=8)
-
+class LoginOut(BaseModel):
+    username:str = Field(...,max_length=20, example="LasterLG117")
 
 @app.get(
     path="/",
@@ -168,3 +168,14 @@ def update_person(
     response = person.dict()
     # response.update(location.dict())
     return response
+
+@app.post(
+    path="login",
+    response_model=LoginOut,
+    status_code=status.HTTP_200_OK
+)
+def login(
+    username: str = Form(...),
+    password: SecretStr = Form(...)
+):
+    return LoginOut
