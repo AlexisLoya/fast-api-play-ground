@@ -1,8 +1,6 @@
 #Python
-from operator import gt
 from typing import Optional
 from enum import Enum
-from click import password_option
 from typing import List
 # Pydantic
 from pydantic import BaseModel, EmailStr
@@ -10,7 +8,8 @@ from pydantic import Field
 from pydantic import SecretStr
 # FastAPI
 from fastapi import FastAPI, File, Form, Header,Cookie, Path, Query, UploadFile, status
-from fastapi import Body
+from fastapi import Body, HTTPException
+
 app = FastAPI()
 
 # Models
@@ -125,6 +124,7 @@ def show_person(
 
 
 # Validations: Path Parameters
+persons = [1,2,3,4,5,117]
 @app.get(
     path="/person/detail/{person_id}",
     status_code=status.HTTP_200_OK
@@ -133,10 +133,16 @@ def show_person(
     person_id: int = Path(
         ...,
         gt=0,
+        example=117,
         title="person id",
         description="This is the person id. It's required"
         )
 ):
+    if person_id not in persons:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This person doesn't exist"
+        )
     return{'person_id':person_id,'name':'Bruce','age':30}
 
 
@@ -239,3 +245,4 @@ def post_image(
     } for image in images]
 
     return info_images
+
