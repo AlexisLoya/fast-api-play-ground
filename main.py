@@ -121,6 +121,7 @@ def new_person(person: Person = Body(...)):
 @app.get(
     path="/person/detail",
     status_code=status.HTTP_200_OK,
+    deprecated=True,
     tags=['Persons'],
     summary="Get a person from the database"
     )
