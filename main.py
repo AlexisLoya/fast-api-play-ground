@@ -84,7 +84,8 @@ class LoginOut(BaseModel):
 
 @app.get(
     path="/",
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    tags=['Home']
     )
 def home():
     return {"Hello": "World"}
@@ -93,7 +94,8 @@ def home():
 @app.post(
     path="/person/new/",
     status_code=status.HTTP_201_CREATED, 
-    response_model=PersonOut
+    response_model=PersonOut,
+    tags=['Persons']
     )
 def new_person(person: Person = Body(...)):
     return person
@@ -103,7 +105,8 @@ def new_person(person: Person = Body(...)):
 
 @app.get(
     path="/person/detail",
-    status_code=status.HTTP_200_OK 
+    status_code=status.HTTP_200_OK,
+    tags=['Persons'] 
     )
 def show_person(
     name : Optional[str] = Query(
@@ -127,7 +130,8 @@ def show_person(
 persons = [1,2,3,4,5,117]
 @app.get(
     path="/person/detail/{person_id}",
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    tags=['Persons']
     )
 def show_person(
     person_id: int = Path(
@@ -150,7 +154,8 @@ def show_person(
 # Validations: RequestBody Parameters
 @app.put(
     path="/person/{person_id}",
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    tags=['Persons']
     )
 def update_person(
     person_id : int = Path(
@@ -181,7 +186,8 @@ def update_person(
 @app.post(
     path="login",
     response_model=LoginOut,
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    tags=['Authenticate']
 )
 def login(
     username: str = Form(...),
@@ -193,7 +199,8 @@ def login(
 
 @app.post(
     path="/contact/",
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    tags=['Persons']
 )
 def contact(
     fisrt_name: str = Form(
@@ -219,7 +226,8 @@ def contact(
 # Files
 @app.post(
     path="/post-image",
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
+    tags=['Files']
 )
 def post_image(
     image: UploadFile = File(...)
@@ -233,7 +241,8 @@ def post_image(
 
 
 @app.post(
-    path='/post-multi-image'
+    path='/post-multi-image',
+    tags=['Files']
 )
 def post_image(
     images: List[UploadFile] = File(...)
